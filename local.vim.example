@@ -1,0 +1,11 @@
+" ── local.vim.example ── ajustes DE ESTA MÁQUINA ───────────────────────────────
+" Copia este archivo a  local.vim  (está en .gitignore, así que no se sube).
+" Se carga ANTES que todo lo demás: aquí solo van variables.
+" Para mapeos/comandos extra que necesiten todo cargado, usa  local.after.vim.
+
+" let g:my_flavor = 'macchiato'      " mocha | macchiato | frappe | latte
+" let g:my_nerdfont = 0              " 0 si tu terminal NO usa una Nerd Font
+" let g:my_transparent = 1           " fondo transparente (el de tu terminal)
+" let g:my_float = {'width': 0.95, 'height': 0.9}     " tamaño del terminal flotante (0-1)
+" let g:my_format_on_save = 1        " formatear al guardar (también: <Space>uf)
+" let g:my_no_autoinstall = 1        " no instalar plugins solo en el primer arranque

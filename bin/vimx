@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# vimx — abre Vim con TODAS las herramientas de esta config a mano (fzf, ripgrep,
+# servidores LSP, formateadores...) sin instalar nada en tu sistema y sin tocar
+# tu configuración de NixOS: usa un nix-shell efímero (nix/shell.nix).
+#
+#   vimx archivo.py            igual que `vim archivo.py`
+#   VIMX_NO_NIX=1 vimx ...     no usar nix aunque esté instalado
+#   VIMX_FORCE=1  vimx ...     usar nix aunque ya tengas las herramientas
+#   VIMX_VIM=/ruta/a/vim       otro binario de vim
+#
+# Tip: alias vim=vimx   (en tu shell, no en NixOS)
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
+VIM_BIN="${VIMX_VIM:-vim}"
+
+# Si ya tienes lo imprescindible (y algún LSP), no hace falta nix
+have_tools() {
+  local t
+  for t in fzf rg git ruff bash-language-server; do
+    command -v "$t" >/dev/null 2>&1 || return 1
+  done
+}
+
+if [[ -n "${VIMX_NO_NIX:-}" ]] || ! command -v nix-shell >/dev/null 2>&1 \
+   || { [[ -z "${VIMX_FORCE:-}" ]] && have_tools; }; then
+  exec "$VIM_BIN" "$@"
+fi
+
+# Argumentos escapados para pasarlos a `nix-shell --run`
+args=""
+if (($# > 0)); then args="$(printf '%q ' "$@")"; fi
+run="export VIMX_ACTIVE=1; exec $VIM_BIN $args"
+
+if nix-instantiate --find-file nixpkgs >/dev/null 2>&1; then
+  # Caso normal: <nixpkgs> existe (canal, o nixPath de tu flake)
+  exec nix-shell "$ROOT/nix/shell.nix" --run "$run"
+else
+  # Sin canales (solo flakes): usamos el nixpkgs registrado en el registro de flakes
+  exec nix-shell --extra-experimental-features 'nix-command flakes' \
+    --arg pkgs '(builtins.getFlake "nixpkgs").legacyPackages.${builtins.currentSystem}' \
+    "$ROOT/nix/shell.nix" --run "$run"
+fi

@@ -1,0 +1,6 @@
+# Plugins descargados: se reinstalan solos en el primer arranque
+/plugged/
+# Ajustes propios de cada máquina
+/local.vim
+/local.after.vim
+/plugins/local-*.vim
