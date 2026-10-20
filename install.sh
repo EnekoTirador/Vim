@@ -10,6 +10,8 @@
 #   ./install.sh           ~/.vimrc = una línea `source ...` (guarda el anterior en .bak)
 #   ./install.sh --append  en lugar de reemplazar, añade la línea al final de tu ~/.vimrc
 set -euo pipefail
+# Añadir la línea "source ~/.config/vim/vimrc" al ~/.vimrc
+echo "source ~/.config/vim/vimrc" > ~/.vimrc
 
 ROOT="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 VIMRC="$HOME/.vimrc"
